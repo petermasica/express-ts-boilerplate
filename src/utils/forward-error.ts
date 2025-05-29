@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { SuccessResponse } from '~/schemas/responses';
+import { SuccessResponse } from '~/schemas/response-schema';
 
 type ControllerHandler<T> = (
   req: Request,

@@ -2,7 +2,7 @@ import type { Document } from 'mongodb';
 
 import { getDb } from '~/config/db';
 
-export const getEntities = async <T extends Document>(
+export const getEntitiesPaginated = async <T extends Document>(
   collectionName: string,
   options: { page: number; limit: number } = { page: 1, limit: 20 },
 ) => {

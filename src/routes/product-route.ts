@@ -2,13 +2,13 @@ import { Router } from 'express';
 import httpStatus from 'http-status';
 import { randomUUID } from 'node:crypto';
 
-import { APIError } from '~/error/apiError';
-import { insertProductSchema, Product } from '~/schemas/products';
-import { forwardError } from '~/utils/forwardError';
+import { APIError } from '~/error/api-error';
+import { productCreateSchema, ProductRead } from '~/schemas/product-schema';
+import { forwardError } from '~/utils/forward-error';
 
 const router = Router();
 
-const products = [
+const mockProducts = [
   {
     id: 'b5e8c6a2-2e3a-4c1d-9f7b-1a2e3c4d5f6a',
     name: 'Product Alpha',
@@ -34,10 +34,10 @@ const products = [
 
 router.get(
   '/',
-  forwardError<Product[]>((_req, res) => {
+  forwardError<ProductRead[]>((_req, res) => {
     res.json({
       status: 'success',
-      data: products,
+      data: mockProducts,
       message: 'Products fetched successfully',
     });
   }),
@@ -45,8 +45,8 @@ router.get(
 
 router.post(
   '/',
-  forwardError<Product>((req, res) => {
-    const result = insertProductSchema.safeParse(req.body);
+  forwardError<ProductRead>((req, res) => {
+    const result = productCreateSchema.safeParse(req.body);
 
     if (!result.success) {
       throw new APIError(
@@ -57,11 +57,11 @@ router.post(
       );
     }
 
-    const newProduct: Product = {
+    const newProduct: ProductRead = {
       id: randomUUID(),
       ...result.data,
     };
-    products.push(newProduct);
+    mockProducts.push(newProduct);
 
     res.status(httpStatus.CREATED).json({
       status: 'success',
@@ -71,4 +71,4 @@ router.post(
   }),
 );
 
-export default router;
+export const productsRouter = router;

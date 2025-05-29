@@ -1,15 +1,19 @@
 import { z } from 'zod';
 
-import { registry } from './registry';
-import { insertProductSchema, selectProductSchema } from '~/schemas/products';
+import { registry } from './openapi-registry';
+import {
+  productCreateSchema,
+  productReadSchema,
+} from '~/schemas/product-schema';
 import {
   errorResponseSchema,
   successResponseSchema,
-} from '~/schemas/responses';
+} from '~/schemas/response-schema';
+import { generateZodValidationErrorExample } from '~/utils/generate-validation-error-example';
 
 // Register schemas
-registry.register('SelectProduct', selectProductSchema);
-registry.register('InsertProduct', insertProductSchema);
+registry.register('ProductReadSchema', productReadSchema);
+registry.register('ProductCreateSchema', productCreateSchema);
 
 // Register POST /api/products
 registry.registerPath({
@@ -20,7 +24,7 @@ registry.registerPath({
     body: {
       content: {
         'application/json': {
-          schema: insertProductSchema,
+          schema: productCreateSchema,
         },
       },
     },
@@ -30,7 +34,7 @@ registry.registerPath({
       description: 'Product created successfully',
       content: {
         'application/json': {
-          schema: successResponseSchema(selectProductSchema),
+          schema: successResponseSchema(productReadSchema),
         },
       },
     },
@@ -39,6 +43,12 @@ registry.registerPath({
       content: {
         'application/json': {
           schema: errorResponseSchema,
+          examples: {
+            invalidInsert: {
+              summary: 'Invalid productCreateSchema example',
+              value: generateZodValidationErrorExample(productCreateSchema),
+            },
+          },
         },
       },
     },
@@ -56,7 +66,7 @@ registry.registerPath({
       description: 'List of products',
       content: {
         'application/json': {
-          schema: successResponseSchema(z.array(selectProductSchema)),
+          schema: successResponseSchema(z.array(productReadSchema)),
         },
       },
     },

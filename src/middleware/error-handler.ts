@@ -2,15 +2,15 @@ import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
 
 import { logger } from '~/config/logger';
-import { APIError } from '~/error/apiError';
-import { ErrorResponse } from '~/schemas/responses';
+import { APIError } from '~/error/api-error';
+import { ErrorResponse } from '~/schemas/response-schema';
 
-export function errorHandler(
+export const errorHandler = (
   err: unknown,
   req: Request,
   res: Response<ErrorResponse>,
   _next: NextFunction,
-) {
+) => {
   let error = err;
 
   if (!(error instanceof APIError)) {
@@ -51,4 +51,4 @@ export function errorHandler(
       }),
     },
   });
-}
+};

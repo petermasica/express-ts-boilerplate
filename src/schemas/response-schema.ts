@@ -16,8 +16,14 @@ export const errorResponseSchema = z
         details: z
           .array(
             z.object({
-              field: z.string().optional(),
-              reason: z.string(),
+              field: z.string().optional().openapi({
+                description: 'Field that caused the error',
+                example: 'email',
+              }),
+              reason: z.string().openapi({
+                description: 'Reason for the error',
+                example: 'Invalid email format',
+              }),
             }),
           )
           .optional()

@@ -23,7 +23,7 @@ export const productDbSchema = z
   })
   .openapi('ProductDbSchema', { description: 'Database product schema' });
 
-export const selectProductSchema = productDbSchema
+export const productReadSchema = productDbSchema
   .omit({ _id: true })
   .extend({
     id: z.string().openapi({
@@ -31,30 +31,30 @@ export const selectProductSchema = productDbSchema
       example: '507f1f77bcf86cd799439011',
     }),
   })
-  .openapi('SelectProduct', {
+  .openapi('ProductReadSchema', {
     description: 'API product schema',
   });
 
-export const insertProductSchema = z
+export const productCreateSchema = z
   .object({
     name: productDbSchema.shape.name,
     description: productDbSchema.shape.description,
     price: productDbSchema.shape.price,
     inStock: productDbSchema.shape.inStock,
   })
-  .openapi('InsertProduct', {
+  .openapi('ProductCreateSchema', {
     description: 'API schema for creating a product',
   });
 
-export const updateProductSchema = insertProductSchema.partial();
+export const productUpdateSchema = productReadSchema.partial();
 
 export type ProductDb = z.infer<typeof productDbSchema>;
 
-export type Product = z.infer<typeof selectProductSchema>;
-export type UpdateProduct = z.infer<typeof updateProductSchema>;
+export type ProductRead = z.infer<typeof productReadSchema>;
+export type ProductUpdate = z.infer<typeof productUpdateSchema>;
 
 // Transform function to convert DB to API shape
-export const transformProductDbToApi = (data: ProductDb): Product => ({
+export const transformProductDbToApi = (data: ProductDb): ProductRead => ({
   id: data._id,
   name: data.name,
   description: data.description,
