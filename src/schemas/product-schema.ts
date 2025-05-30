@@ -3,9 +3,9 @@ import { z } from 'zod';
 
 extendZodWithOpenApi(z);
 
-export const productDbSchema = z
+export const productReadSchema = z
   .object({
-    _id: z.string().openapi({
+    id: z.string().openapi({
       description: 'MongoDB ObjectId',
       example: '507f1f77bcf86cd799439011',
     }),
@@ -21,43 +21,18 @@ export const productDbSchema = z
       .boolean()
       .openapi({ example: true, description: 'Is the product in stock?' }),
   })
-  .openapi('ProductDbSchema', { description: 'Database product schema' });
-
-export const productReadSchema = productDbSchema
-  .omit({ _id: true })
-  .extend({
-    id: z.string().openapi({
-      description: 'Product ID (MongoDB ObjectId)',
-      example: '507f1f77bcf86cd799439011',
-    }),
-  })
   .openapi('ProductReadSchema', {
-    description: 'API product schema',
+    description: 'API schema for reading a product',
   });
 
-export const productCreateSchema = z
-  .object({
-    name: productDbSchema.shape.name,
-    description: productDbSchema.shape.description,
-    price: productDbSchema.shape.price,
-    inStock: productDbSchema.shape.inStock,
-  })
+export const productCreateSchema = productReadSchema
+  .omit({ id: true })
   .openapi('ProductCreateSchema', {
     description: 'API schema for creating a product',
   });
 
-export const productUpdateSchema = productReadSchema.partial();
-
-export type ProductDb = z.infer<typeof productDbSchema>;
+export const productUpdateSchema = productCreateSchema.partial();
 
 export type ProductRead = z.infer<typeof productReadSchema>;
+export type ProductCreate = z.infer<typeof productCreateSchema>;
 export type ProductUpdate = z.infer<typeof productUpdateSchema>;
-
-// Transform function to convert DB to API shape
-export const transformProductDbToApi = (data: ProductDb): ProductRead => ({
-  id: data._id,
-  name: data.name,
-  description: data.description,
-  price: data.price,
-  inStock: data.inStock,
-});

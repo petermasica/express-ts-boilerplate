@@ -10,7 +10,7 @@ import { errorHandler } from '~/middleware/error-handler';
 import { httpLogger } from '~/middleware/http-logger';
 import { notFoundHandler } from '~/middleware/not-found-handler';
 import { openApiDocument } from '~/openapi/openapi-document';
-import routes from '~/routes';
+import { routes } from '~/routes';
 
 export const app = express();
 

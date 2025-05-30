@@ -6,4 +6,4 @@ const router = Router();
 
 router.use('/products', productsRouter);
 
-export default router;
+export const routes = router;
