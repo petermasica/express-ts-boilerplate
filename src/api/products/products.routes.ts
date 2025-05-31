@@ -1,7 +1,11 @@
 import { Router } from 'express';
 
-import * as productHandlers from './products.handlers';
-import { paramsWithIdSchema, productSchema } from './products.schema';
+import * as productHandlers from './products.handler';
+import {
+  productParamsSchema,
+  productQuerySchema,
+  productSchema,
+} from './products.schema';
 import { validateRequest } from '~/middleware/request-validation';
 
 const router = Router();
@@ -12,11 +16,15 @@ router.post(
   productHandlers.createOne,
 );
 
-router.get('/', productHandlers.findAll);
+router.get(
+  '/',
+  validateRequest({ query: productQuerySchema }),
+  productHandlers.findAll,
+);
 
 router.get(
   '/:id',
-  validateRequest({ params: paramsWithIdSchema }),
+  validateRequest({ params: productParamsSchema }),
   productHandlers.findOne,
 );
 

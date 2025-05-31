@@ -10,7 +10,6 @@ export default tseslint.config(
     ignores: ['**/*.config.{js,mjs,ts}', 'dist/**'],
   },
   {
-    // ignores: ["**/*.config.{js,mjs,ts}"],
     files: ['**/*.{js,ts}'],
     languageOptions: {
       parserOptions: {
@@ -27,6 +26,18 @@ export default tseslint.config(
           argsIgnorePattern: '^_',
         },
       ],
+    },
+  },
+  {
+    files: ['**/*.test.ts', '**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+    },
+  },
+  {
+    files: ['**/*.d.ts'],
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': 'off',
     },
   },
 );

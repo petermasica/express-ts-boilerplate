@@ -5,9 +5,14 @@ import {
   getPaginatedProducts,
   getProductById,
 } from './products.repository';
-import { ParamsWithId, Product, ProductWithId } from './products.schema';
-import { SuccessResponse } from '~/schemas/response-schema';
-import { forwardError } from '~/utils/forward-error';
+import {
+  Product,
+  ProductParams,
+  ProductQuery,
+  ProductWithId,
+} from './products.schema';
+import { SuccessResponse } from '~/shared/schemas/response.schema';
+import { forwardError } from '~/shared/utils/forward-error';
 
 export const createOne = forwardError<
   ProductWithId,
@@ -24,20 +29,22 @@ export const createOne = forwardError<
   });
 });
 
-export const findAll = forwardError<ProductWithId[]>(async (_req, res) => {
-  const productsWithPagination = await getPaginatedProducts();
+export const findAll = forwardError<ProductWithId[]>(async (req, res) => {
+  const paginatedProducts = await getPaginatedProducts(
+    req.validatedQuery as ProductQuery,
+  );
 
   res.json({
     status: 'success',
-    data: productsWithPagination.products,
+    data: paginatedProducts.products,
     message: 'Products fetched successfully',
     meta: {
-      pagination: productsWithPagination.pagination,
+      pagination: paginatedProducts.pagination,
     },
   });
 });
 
-export const findOne = forwardError<ProductWithId, ParamsWithId>(
+export const findOne = forwardError<ProductWithId, ProductParams>(
   async (req, res) => {
     const product = await getProductById(req.params.id);
 

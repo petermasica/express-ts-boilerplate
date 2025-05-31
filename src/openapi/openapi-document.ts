@@ -2,7 +2,7 @@ import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
 
 import packageJSON from '../../package.json';
 import { registry } from './openapi-registry';
-import './products-openapi';
+import '~/api/products/products.openapi';
 import { config } from '~/config/env';
 
 const generator = new OpenApiGeneratorV3(registry.definitions);

@@ -15,15 +15,15 @@ export const validateRequest =
   (req: Request, _res: Response, next: NextFunction) => {
     try {
       if (validators.params) {
-        validators.params.parse(req.params);
+        req.params = validators.params.parse(req.params);
       }
 
       if (validators.body) {
-        validators.body.parse(req.body);
+        req.body = validators.body.parse(req.body);
       }
 
       if (validators.query) {
-        validators.query.parse(req.query);
+        req.validatedQuery = validators.query.parse(req.query);
       }
 
       next();

@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 
 import { logger } from '~/config/logger';
 import { APIError } from '~/error/api-error';
-import { ErrorResponse } from '~/schemas/response-schema';
+import { ErrorResponse } from '~/shared/schemas/response.schema';
 
 export const errorHandler = (
   err: unknown,

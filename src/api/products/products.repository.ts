@@ -2,13 +2,12 @@ import httpStatus from 'http-status';
 import { ObjectId } from 'mongodb';
 
 import { Products } from './products.model';
-import { Product, ProductWithId } from './products.schema';
+import { Product, ProductQuery } from './products.schema';
 import { logger } from '~/config/logger';
 import { APIError } from '~/error/api-error';
+import { mapMongoId } from '~/shared/utils/map-mongo-id';
 
-export const createProduct = async (
-  product: Product,
-): Promise<ProductWithId> => {
+export const createProduct = async (product: Product) => {
   const insertResult = await Products().insertOne(product);
 
   if (!insertResult.acknowledged) {
@@ -21,26 +20,23 @@ export const createProduct = async (
     );
   }
 
-  return {
-    ...product,
+  return mapMongoId({
     _id: insertResult.insertedId,
-  };
+    ...product,
+  });
 };
 
-export const getPaginatedProducts = async (
-  paginationOptions: { page: number; limit: number } = { page: 1, limit: 20 },
-) => {
-  const page = paginationOptions.page > 0 ? paginationOptions.page : 1;
-  const limit = paginationOptions.limit > 0 ? paginationOptions.limit : 20;
+export const getPaginatedProducts = async (paginationOptions: ProductQuery) => {
+  const { page, limit } = paginationOptions;
   const skip = (page - 1) * limit;
 
   const [products, total] = await Promise.all([
-    Products().find().skip(skip).limit(limit).toArray(),
+    Products().find({}).skip(skip).limit(limit).toArray(),
     Products().countDocuments(),
   ]);
 
   return {
-    products,
+    products: products.map(mapMongoId),
     pagination: {
       limit,
       page,
@@ -70,5 +66,5 @@ export const getProductById = async (productId: string) => {
     );
   }
 
-  return products[0];
+  return mapMongoId(products[0]);
 };

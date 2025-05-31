@@ -6,13 +6,14 @@ import { logger } from './logger';
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 2000;
 
+let client: MongoClient;
 let db: Db;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const initDbConnection = async (attempts = 1): Promise<void> => {
   try {
-    const client = new MongoClient(config.db.uri);
+    client = new MongoClient(`${config.db.uri}/${config.db.name}`);
     await client.connect();
 
     db = client.db(config.db.name);
@@ -32,4 +33,5 @@ export const initDbConnection = async (attempts = 1): Promise<void> => {
   }
 };
 
+export const getCLient = () => client;
 export const getDb = () => db;
