@@ -14,6 +14,7 @@ export const initDbConnection = async (attempts = 1): Promise<void> => {
   try {
     const client = new MongoClient(config.db.uri);
     await client.connect();
+
     db = client.db(config.db.name);
 
     logger.info('MongoDB connection successful');
