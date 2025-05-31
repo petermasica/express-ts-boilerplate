@@ -11,16 +11,10 @@ import {
   ProductQuery,
   ProductWithId,
 } from './products.schema';
-import { SuccessResponse } from '~/shared/schemas/response.schema';
 import { forwardError } from '~/shared/utils/forward-error';
 
-export const createOne = forwardError<
-  ProductWithId,
-  unknown,
-  SuccessResponse<ProductWithId>,
-  Product
->(async (req, res) => {
-  const newProduct = await createProduct(req.body);
+export const createOne = forwardError<ProductWithId>(async (req, res) => {
+  const newProduct = await createProduct(req.validatedBody as Product);
 
   res.status(httpStatus.CREATED).json({
     status: 'success',
@@ -44,14 +38,13 @@ export const findAll = forwardError<ProductWithId[]>(async (req, res) => {
   });
 });
 
-export const findOne = forwardError<ProductWithId, ProductParams>(
-  async (req, res) => {
-    const product = await getProductById(req.params.id);
+export const findOne = forwardError<ProductWithId>(async (req, res) => {
+  const validatedParams = req.validatedParams as ProductParams;
+  const product = await getProductById(validatedParams.id);
 
-    res.json({
-      status: 'success',
-      data: product,
-      message: 'Product fetched successfully',
-    });
-  },
-);
+  res.json({
+    status: 'success',
+    data: product,
+    message: 'Product fetched successfully',
+  });
+});

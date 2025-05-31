@@ -15,11 +15,11 @@ export const validateRequest =
   (req: Request, _res: Response, next: NextFunction) => {
     try {
       if (validators.params) {
-        req.params = validators.params.parse(req.params);
+        req.validatedParams = validators.params.parse(req.params);
       }
 
       if (validators.body) {
-        req.body = validators.body.parse(req.body);
+        req.validatedBody = validators.body.parse(req.body);
       }
 
       if (validators.query) {

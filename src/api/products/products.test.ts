@@ -111,6 +111,60 @@ describe('GET /api/products', () => {
       },
     });
   });
+
+  it('should return paginated products with custom page and limit', async () => {
+    const product = {
+      name: 'Test Product',
+      description: 'A product for testing',
+      price: 42.5,
+      inStock: true,
+    };
+
+    // Create 15 products
+    for (let i = 1; i <= 15; i++) {
+      await request(app)
+        .post('/api/products')
+        .send({ ...product, name: `${product.name} ${i}` })
+        .expect(201);
+    }
+
+    const response = await request(app)
+      .get('/api/products?page=2&limit=5')
+      .expect(200);
+
+    const resBody = successResponseSchema(productWithIdSchema.array()).parse(
+      response.body,
+    );
+
+    expect(resBody.status).toBe('success');
+    expect(resBody.data.length).toBe(5);
+    expect(resBody.data[0].name).toContain('Test Product 6'); // First product on page 2
+    expect(resBody.data[4].name).toContain('Test Product 10'); // Last product on page 2
+    expect(resBody.message).toBe('Products fetched successfully');
+    expect(resBody.meta?.pagination).toEqual({
+      page: 2,
+      limit: 5,
+      total: 15,
+    });
+  });
+
+  it('should return 400 for invalid page or limit values', async () => {
+    const response = await request(app)
+      .get('/api/products?page=0&limit=100')
+      .expect(400);
+
+    const resBody = errorResponseSchema.parse(response.body);
+
+    expect(resBody.status).toBe('error');
+    expect(resBody.error).toBeDefined();
+    expect(resBody.error.message).toBe('Validation failed');
+    expect(resBody.error.details).toEqual(
+      expect.arrayContaining([
+        { field: 'page', reason: 'Number must be greater than or equal to 1' },
+        { field: 'limit', reason: 'Number must be less than or equal to 50' },
+      ]),
+    );
+  });
 });
 
 describe('GET /api/products/:id', () => {

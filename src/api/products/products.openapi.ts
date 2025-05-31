@@ -192,6 +192,30 @@ registry.registerPath({
         },
       },
     },
+    400: {
+      description: 'Invalid query parameters',
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+          example: {
+            status: 'error',
+            error: {
+              message: 'Validation failed',
+              details: [
+                {
+                  field: 'page',
+                  reason: 'Number must be greater than or equal to 1',
+                },
+                {
+                  field: 'limit',
+                  reason: 'Number must be less than or equal to 50',
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
   },
   tags: ['Products'],
 });

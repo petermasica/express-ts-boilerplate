@@ -2,29 +2,15 @@ import { NextFunction, Request, Response } from 'express';
 
 import { SuccessResponse } from '~/shared/schemas/response.schema';
 
-type ControllerHandler<
-  T,
-  Params = unknown,
-  ResBody = SuccessResponse<T>,
-  ReqBody = unknown,
-  ReqQuery = unknown,
-> = (
-  req: Request<Params, ResBody, ReqBody, ReqQuery>,
+type ControllerHandler<T> = (
+  req: Request,
   res: Response<SuccessResponse<T>>,
 ) => Promise<void> | void;
 
 export const forwardError =
-  <
-    T,
-    Params = unknown,
-    ResBody = SuccessResponse<T>,
-    ReqBody = unknown,
-    ReqQuery = unknown,
-  >(
-    callback: ControllerHandler<T, Params, ResBody, ReqBody, ReqQuery>,
-  ) =>
+  <T>(callback: ControllerHandler<T>) =>
   async (
-    req: Request<Params, ResBody, ReqBody, ReqQuery>,
+    req: Request,
     res: Response<SuccessResponse<T>>,
     next: NextFunction,
   ) => {
