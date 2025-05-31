@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import httpStatus from 'http-status';
 
 import {
@@ -6,20 +5,24 @@ import {
   getPaginatedProducts,
   getProductById,
 } from './products.repository';
-import { Product, ProductWithId } from './products.schema';
+import { ParamsWithId, Product, ProductWithId } from './products.schema';
+import { SuccessResponse } from '~/schemas/response-schema';
 import { forwardError } from '~/utils/forward-error';
 
-export const createOne = forwardError<ProductWithId>(
-  async (req: Request<unknown, unknown, Product>, res) => {
-    const newProduct = await createProduct(req.body);
+export const createOne = forwardError<
+  ProductWithId,
+  unknown,
+  SuccessResponse<ProductWithId>,
+  Product
+>(async (req, res) => {
+  const newProduct = await createProduct(req.body);
 
-    res.status(httpStatus.CREATED).json({
-      status: 'success',
-      data: newProduct,
-      message: 'Product created successfully',
-    });
-  },
-);
+  res.status(httpStatus.CREATED).json({
+    status: 'success',
+    data: newProduct,
+    message: 'Product created successfully',
+  });
+});
 
 export const findAll = forwardError<ProductWithId[]>(async (_req, res) => {
   const productsWithPagination = await getPaginatedProducts();
@@ -34,8 +37,8 @@ export const findAll = forwardError<ProductWithId[]>(async (_req, res) => {
   });
 });
 
-export const findOne = forwardError<ProductWithId>(
-  async (req: Request, res) => {
+export const findOne = forwardError<ProductWithId, ParamsWithId>(
+  async (req, res) => {
     const product = await getProductById(req.params.id);
 
     res.json({
